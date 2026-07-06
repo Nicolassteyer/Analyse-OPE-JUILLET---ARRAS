@@ -1,11 +1,15 @@
 import fs from "node:fs";
 import path from "node:path";
 import multer from "multer";
+import { fileURLToPath } from "node:url";
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const serverRoot = path.resolve(__dirname, "..");
 
 const storage = multer.diskStorage({
   destination(request, _file, callback) {
     const year = request.params.year || "unknown";
-    const uploadDir = path.resolve("uploads", year);
+    const uploadDir = path.join(serverRoot, "uploads", year);
     fs.mkdirSync(uploadDir, { recursive: true });
     callback(null, uploadDir);
   },

@@ -2,19 +2,22 @@ import { RevenueChart } from "../components/charts/RevenueChart.jsx";
 import { KpiCard } from "../components/dashboard/KpiCard.jsx";
 
 const kpis = [
-  { label: "Remises", value: "75", trend: "+8%" },
-  { label: "Clients", value: "184", trend: "+14%", tone: "good" },
-  { label: "CA concerne", value: "2 403 EUR", trend: "+11%", tone: "good" },
-  { label: "Montant remise", value: "1 072 EUR", trend: "-3%", tone: "warn" },
-  { label: "Tickets", value: "61", trend: "+6%" },
+  { label: "Clients total", value: "184", trend: "Midi + Soir", tone: "good" },
+  { label: "Clients midi", value: "96", trend: "52% du total", tone: "good" },
+  { label: "Clients soir", value: "88", trend: "48% du total" },
+  { label: "Tickets total", value: "61", trend: "Base analysee" },
+  { label: "Ticket moyen", value: "39 EUR", trend: "Repere CA" },
 ];
 
 export default function Dashboard() {
   return (
     <div className="space-y-6">
       <section>
-        <p className="text-sm font-black uppercase text-brand">Pilotage general</p>
-        <h1 className="mt-2 text-3xl font-black tracking-normal text-slate-950">Dashboard operationnel</h1>
+        <p className="text-sm font-black uppercase text-brand">Periode analysee: OPE Juillet Arras</p>
+        <h1 className="mt-2 text-3xl font-black tracking-normal text-slate-950">Focus clients midi, soir et total</h1>
+        <p className="mt-2 max-w-3xl text-sm font-semibold text-muted">
+          Plage cible: exports FLAMS 2025 et 2026 de l'operation Juillet Arras. Les dates exactes seront affichees apres parsing des fichiers HTML importes.
+        </p>
       </section>
       <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-5">
         {kpis.map((kpi) => (
@@ -25,23 +28,27 @@ export default function Dashboard() {
         <article className="glass-panel rounded-lg p-5">
           <div className="mb-4 flex items-center justify-between">
             <div>
-              <p className="text-sm font-black uppercase text-brand">Evolution</p>
-              <h2 className="text-xl font-black">Evolution du CA</h2>
+              <p className="text-sm font-black uppercase text-brand">Evolution clients</p>
+              <h2 className="text-xl font-black">Clients par jour analyse</h2>
             </div>
           </div>
           <RevenueChart />
         </article>
         <article className="glass-panel rounded-lg p-5">
           <p className="text-sm font-black uppercase text-brand">Midi / Soir</p>
-          <h2 className="mt-1 text-xl font-black">Repartition service</h2>
+          <h2 className="mt-1 text-xl font-black">Repartition clients</h2>
           <div className="mt-5 grid gap-3">
             <div className="rounded-lg border border-slate-200 bg-white p-4">
               <strong className="text-lg">Midi</strong>
-              <p className="mt-2 text-sm font-bold text-muted">Clients: 96 · Tickets: 33 · CA: 1 280 EUR</p>
+              <p className="mt-2 text-sm font-bold text-muted">Clients: 96 / 184 - Tickets: 33 - CA indicatif: 1 280 EUR</p>
             </div>
             <div className="rounded-lg border border-slate-200 bg-white p-4">
               <strong className="text-lg">Soir</strong>
-              <p className="mt-2 text-sm font-bold text-muted">Clients: 88 · Tickets: 28 · CA: 1 123 EUR</p>
+              <p className="mt-2 text-sm font-bold text-muted">Clients: 88 / 184 - Tickets: 28 - CA indicatif: 1 123 EUR</p>
+            </div>
+            <div className="rounded-lg border border-slate-200 bg-slate-950 p-4 text-white">
+              <strong className="text-lg">Total</strong>
+              <p className="mt-2 text-sm font-bold text-slate-200">Clients: 184 - Tickets: 61 - CA indicatif: 2 403 EUR</p>
             </div>
           </div>
         </article>

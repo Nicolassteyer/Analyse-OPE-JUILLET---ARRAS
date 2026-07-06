@@ -1,13 +1,13 @@
 import { Area, AreaChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 
 const data = [
-  { day: "Lun", ca: 1840 },
-  { day: "Mar", ca: 2160 },
-  { day: "Mer", ca: 1980 },
-  { day: "Jeu", ca: 2403 },
-  { day: "Ven", ca: 2680 },
-  { day: "Sam", ca: 2940 },
-  { day: "Dim", ca: 2260 },
+  { day: "Lun", clients: 22 },
+  { day: "Mar", clients: 26 },
+  { day: "Mer", clients: 24 },
+  { day: "Jeu", clients: 31 },
+  { day: "Ven", clients: 34 },
+  { day: "Sam", clients: 29 },
+  { day: "Dim", clients: 18 },
 ];
 
 export function RevenueChart() {
@@ -16,7 +16,7 @@ export function RevenueChart() {
       <ResponsiveContainer width="100%" height="100%">
         <AreaChart data={data} margin={{ left: 0, right: 12, top: 18, bottom: 0 }}>
           <defs>
-            <linearGradient id="ca" x1="0" x2="0" y1="0" y2="1">
+            <linearGradient id="clients" x1="0" x2="0" y1="0" y2="1">
               <stop offset="5%" stopColor="#0f766e" stopOpacity={0.35} />
               <stop offset="95%" stopColor="#0f766e" stopOpacity={0.02} />
             </linearGradient>
@@ -24,8 +24,8 @@ export function RevenueChart() {
           <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
           <XAxis dataKey="day" tickLine={false} axisLine={false} />
           <YAxis tickLine={false} axisLine={false} />
-          <Tooltip formatter={(value) => [`${value} EUR`, "CA"]} />
-          <Area type="monotone" dataKey="ca" stroke="#0f766e" strokeWidth={3} fill="url(#ca)" />
+          <Tooltip formatter={(value) => [value, "Clients"]} />
+          <Area type="monotone" dataKey="clients" stroke="#0f766e" strokeWidth={3} fill="url(#clients)" />
         </AreaChart>
       </ResponsiveContainer>
     </div>
