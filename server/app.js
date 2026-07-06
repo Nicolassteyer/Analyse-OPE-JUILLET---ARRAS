@@ -1,6 +1,7 @@
 import cors from "cors";
 import dotenv from "dotenv";
 import express from "express";
+import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import healthRoutes from "./routes/health.routes.js";
@@ -19,9 +20,15 @@ app.use("/api/imports", importRoutes);
 
 if (process.env.NODE_ENV === "production") {
   const clientDist = path.resolve(__dirname, "../client/dist");
+  const clientIndex = path.join(clientDist, "index.html");
+
   app.use(express.static(clientDist));
   app.get("*", (_request, response) => {
-    response.sendFile(path.join(clientDist, "index.html"));
+    if (!fs.existsSync(clientIndex)) {
+      return response.status(503).send("Frontend build missing. Check Render build command: npm install --include=dev && npm run install:all && npm run build");
+    }
+
+    return response.sendFile(clientIndex);
   });
 }
 

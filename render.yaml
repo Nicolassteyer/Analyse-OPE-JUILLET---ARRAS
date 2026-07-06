@@ -3,8 +3,8 @@ services:
     name: flams-analytics-pro
     env: node
     plan: starter
-    buildCommand: npm install && npm run install:all && npm run build
-    startCommand: npm start
+    buildCommand: npm install --include=dev && npm run install:all && npm run build
+    startCommand: node server/app.js
     envVars:
       - key: NODE_ENV
         value: production
