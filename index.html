@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Analyse OPE Juillet - Arras</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <aside class="sidebar">
+      <div class="brand">
+        <span class="brand-mark">A</span>
+        <div>
+          <strong>Analyse OPE</strong>
+          <span>Juillet - Arras</span>
+        </div>
+      </div>
+      <nav aria-label="Navigation principale">
+        <a href="#pilotage" class="active">Pilotage</a>
+        <a href="#performance">Performance</a>
+        <a href="#secteurs">Secteurs</a>
+        <a href="#actions">Actions</a>
+      </nav>
+    </aside>
+
+    <main>
+      <header class="topbar">
+        <div>
+          <p class="eyebrow">Tableau de bord operationnel</p>
+          <h1>Analyse OPE Juillet - Arras</h1>
+        </div>
+        <div class="period">
+          <span>Periode</span>
+          <strong>Juillet 2026</strong>
+        </div>
+      </header>
+
+      <section id="pilotage" class="summary-grid">
+        <article class="metric">
+          <span>Objectif operation</span>
+          <strong>+18%</strong>
+          <small>Progression attendue sur la zone Arras</small>
+        </article>
+        <article class="metric">
+          <span>Couverture terrain</span>
+          <strong>86%</strong>
+          <small>Points de contact planifies</small>
+        </article>
+        <article class="metric">
+          <span>Transformation</span>
+          <strong>12,4%</strong>
+          <small>Taux cible sur leads qualifies</small>
+        </article>
+        <article class="metric">
+          <span>Priorite</span>
+          <strong>3 zones</strong>
+          <small>Centre, gare et peripherie nord</small>
+        </article>
+      </section>
+
+      <section id="performance" class="panel">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">Performance hebdomadaire</p>
+            <h2>Lecture rapide des volumes et conversions</h2>
+          </div>
+          <select id="viewMode" aria-label="Mode d'analyse">
+            <option value="volume">Volume</option>
+            <option value="conversion">Conversion</option>
+          </select>
+        </div>
+        <div class="chart" id="chart" aria-label="Graphique de performance"></div>
+      </section>
+
+      <section id="secteurs" class="two-columns">
+        <article class="panel">
+          <div class="section-heading">
+            <div>
+              <p class="eyebrow">Secteurs</p>
+              <h2>Priorisation terrain</h2>
+            </div>
+          </div>
+          <div class="sector-list" id="sectorList"></div>
+        </article>
+
+        <article class="panel">
+          <div class="section-heading">
+            <div>
+              <p class="eyebrow">Signaux</p>
+              <h2>Points d'attention</h2>
+            </div>
+          </div>
+          <ul class="insights">
+            <li><strong>Renforcer les plages 11h-14h</strong><span>Le flux pieton est plus dense autour gare et centre.</span></li>
+            <li><strong>Qualifier avant relance</strong><span>Limiter la pression commerciale sur les contacts froids.</span></li>
+            <li><strong>Suivre le stock supports</strong><span>Prevoir un reapprovisionnement avant le troisieme week-end.</span></li>
+          </ul>
+        </article>
+      </section>
+
+      <section id="actions" class="panel">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">Plan d'action</p>
+            <h2>Prochaines decisions</h2>
+          </div>
+          <button id="addAction" type="button">Ajouter</button>
+        </div>
+        <div class="actions" id="actionsList"></div>
+      </section>
+    </main>
+
+    <script src="./script.js"></script>
+  </body>
+</html>
