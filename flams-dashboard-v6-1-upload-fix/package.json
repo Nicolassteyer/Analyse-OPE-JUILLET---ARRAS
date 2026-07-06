@@ -1,0 +1,12 @@
+{
+  "name": "flams-dashboard-v6-1-upload-fix",
+  "version": "7.0.0",
+  "description": "Dashboard FLAMS OPE ARRAS 2025/2026",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
