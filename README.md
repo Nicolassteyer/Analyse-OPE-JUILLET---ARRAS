@@ -1,19 +1,39 @@
-# Analyse OPE Juillet - Arras
+# FLAMS Analytics PRO
 
-Web app professionnelle de pilotage pour l'analyse d'une operation commerciale ou terrain sur Arras en juillet.
+Application professionnelle d'analyse FLAMS pour comparer les operations OPE Juillet Arras entre 2025 et 2026.
 
-## Contenu
+## Stack
 
-- tableau de bord de synthese
-- indicateurs cles de performance
-- lecture hebdomadaire volume / conversion
-- priorisation des secteurs
-- plan d'action editable cote interface
+- Frontend: React, Vite, Tailwind CSS, Shadcn/UI-ready
+- Backend: Node.js, Express
+- Base de donnees: PostgreSQL, Prisma
+- Graphiques: Recharts
+- Upload: Multer
+- Deploiement: Render
 
-## Lancer en local
+## Structure
 
-Ouvrir `index.html` dans un navigateur.
+```txt
+client/   interface React
+server/   API Express, parser FLAMS, Prisma, uploads
+```
 
-## Publication
+## Demarrage local
 
-Le projet est compatible GitHub Pages, sans compilation ni dependances.
+```bash
+npm install
+npm run install:all
+npm run dev
+```
+
+Creer ensuite `server/.env` depuis `server/.env.example`.
+
+## Render
+
+Le fichier `render.yaml` declare:
+
+- un Web Service Node.js pour l'API
+- une base PostgreSQL
+- les commandes de build et de demarrage
+
+Le frontend est construit dans `client/dist` puis servi par Express en production.

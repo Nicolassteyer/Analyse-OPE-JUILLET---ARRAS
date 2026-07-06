@@ -1,0 +1,41 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model ImportBatch {
+  id        String   @id @default(cuid())
+  year      Int
+  fileName  String
+  status    String   @default("uploaded")
+  createdAt DateTime @default(now())
+  tickets   Ticket[]
+}
+
+model Ticket {
+  id            String      @id @default(cuid())
+  importBatchId String
+  importBatch   ImportBatch @relation(fields: [importBatchId], references: [id], onDelete: Cascade)
+  ticketNumber  String
+  service       String?
+  tableName     String?
+  covers        Int         @default(0)
+  revenue       Decimal     @default(0)
+  discount      Decimal     @default(0)
+  totalToPay    Decimal     @default(0)
+  openedAt      DateTime?
+  lines         TicketLine[]
+}
+
+model TicketLine {
+  id          String  @id @default(cuid())
+  ticketId    String
+  ticket      Ticket  @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+  quantity    Decimal @default(0)
+  designation String
+  amount      Decimal @default(0)
+}

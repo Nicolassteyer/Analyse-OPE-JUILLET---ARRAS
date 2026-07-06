@@ -1,0 +1,11 @@
+node_modules/
+.npm-cache/
+dist/
+.env
+.env.local
+.DS_Store
+server/uploads/**/*.html
+server/uploads/**/*.htm
+server/uploads/**/*.tmp
+server/prisma/dev.db
+*.log
