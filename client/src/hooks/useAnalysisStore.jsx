@@ -50,7 +50,15 @@ export function getActiveImport(importsByYear) {
 }
 
 export function getKpis(importResult) {
-  return importResult?.parsed?.kpis || {
+  return normalizeKpis(importResult?.parsed?.kpis);
+}
+
+export function getGlobalKpis(importResult) {
+  return normalizeKpis(importResult?.parsed?.allTicketsKpis || importResult?.parsed?.kpis);
+}
+
+function normalizeKpis(kpis) {
+  return kpis || {
     clientsCount: 0,
     lunchClients: 0,
     dinnerClients: 0,

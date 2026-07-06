@@ -162,6 +162,7 @@ export async function parseFlamsHtml(filePath, year) {
       hasOperation: /OPE JUILLET ARRAS/i.test(text),
     },
     dailyClients: dailyClientsFor(analysisTickets),
+    allTicketsDailyClients: dailyClientsFor(tickets),
     allTicketsKpis: summarizeTickets(tickets),
     tickets: analysisTickets,
     kpis: summarizeTickets(analysisTickets),
