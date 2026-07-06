@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Flams Arras — Dashboard OPE</title><link rel="stylesheet" href="/styles.css"></head>
+<body>
+<header><div><p class="eyebrow">Flams Arras</p><h1>Dashboard OPE JUILLET ARRAS</h1><p>Analyse 2025 / 2026, clients midi / soir, remises et CA concerné.</p></div><button onclick="refreshData()">Actualiser</button></header>
+<main>
+<section class="uploads">
+<div class="upload-card"><h2>Importer HTML 2026</h2><input id="file2026" type="file" accept=".html,text/html"><button onclick="uploadYear('2026')">Analyser 2026</button><a href="/saved/2026" target="_blank">Voir HTML 2026 sauvegardé</a></div>
+<div class="upload-card"><h2>Importer HTML 2025</h2><input id="file2025" type="file" accept=".html,text/html"><button onclick="uploadYear('2025')">Analyser 2025</button><a href="/saved/2025" target="_blank">Voir HTML 2025 sauvegardé</a></div>
+</section>
+<p id="status"></p>
+<section class="grid kpis" id="kpis"></section>
+<section class="panel"><div><p class="eyebrow">Comparatif clients</p><h2>2026 vs 2025</h2></div><div id="compare" class="compare"></div></section>
+<section class="grid two">
+<div class="panel"><p class="eyebrow">Services</p><h2>Clients par service</h2><canvas id="bar" height="220"></canvas></div>
+<div class="panel"><p class="eyebrow">Répartition</p><h2>CA vs remises 2026</h2><canvas id="donut" height="220"></canvas></div>
+</section>
+<section class="panel"><p class="eyebrow">Détail annuel</p><h2>Tableau comparatif</h2><div id="table"></div></section>
+</main>
+<script src="/app.js"></script>
+</body></html>
