@@ -13,7 +13,11 @@ function formatDelta(value, formatter = (item) => item) {
 }
 
 function findDay(importResult, day, field = "allTicketsDailyClients") {
-  return importResult?.parsed?.[field]?.find((item) => item.day === day)?.clients || 0;
+  return importResult?.parsed?.[field]?.find((item) => item.day === day) || {
+    clients: 0,
+    lunchClients: 0,
+    dinnerClients: 0,
+  };
 }
 
 export default function Comparatif() {
@@ -43,7 +47,14 @@ export default function Comparatif() {
   const days = ["Lun", "Mar", "Mer", "Jeu", "Ven", "Sam", "Dim"].map((day) => {
     const current = findDay(importsByYear[2026], day);
     const previous = findDay(importsByYear[2025], day);
-    return { day, current, previous, ...diff(current, previous) };
+    return {
+      day,
+      current,
+      previous,
+      totalDiff: diff(current.clients, previous.clients),
+      lunchDiff: diff(current.lunchClients, previous.lunchClients),
+      dinnerDiff: diff(current.dinnerClients, previous.dinnerClients),
+    };
   });
 
   return (
@@ -85,20 +96,30 @@ export default function Comparatif() {
       <section className="glass-panel rounded-lg p-5">
         <h2 className="text-xl font-black">Detail clients globaux par jour de la semaine</h2>
         <div className="mt-4 overflow-hidden rounded-lg border border-slate-200 bg-white">
-          <div className="grid grid-cols-5 gap-3 bg-slate-50 px-4 py-3 text-sm font-black text-muted">
+          <div className="grid min-w-[980px] grid-cols-10 gap-3 bg-slate-50 px-4 py-3 text-sm font-black text-muted">
             <span>Jour</span>
-            <span>2025</span>
-            <span>2026</span>
+            <span>2025 total</span>
+            <span>2026 total</span>
             <span>Ecart</span>
-            <span>%</span>
+            <span>2025 midi</span>
+            <span>2026 midi</span>
+            <span>Ecart</span>
+            <span>2025 soir</span>
+            <span>2026 soir</span>
+            <span>Ecart</span>
           </div>
           {days.map((day) => (
-            <div key={day.day} className="grid grid-cols-5 gap-3 border-t border-slate-100 px-4 py-3 text-sm font-bold">
+            <div key={day.day} className="grid min-w-[980px] grid-cols-10 gap-3 border-t border-slate-100 px-4 py-3 text-sm font-bold">
               <span>{day.day}</span>
-              <span>{day.previous}</span>
-              <span>{day.current}</span>
-              <span className={day.delta >= 0 ? "text-emerald-700" : "text-orange-700"}>{formatDelta(day.delta)}</span>
-              <span>{day.percent === null ? "n/a" : `${formatDelta(Math.round(day.percent))}%`}</span>
+              <span>{day.previous.clients}</span>
+              <span>{day.current.clients}</span>
+              <span className={day.totalDiff.delta >= 0 ? "text-emerald-700" : "text-orange-700"}>{formatDelta(day.totalDiff.delta)}</span>
+              <span>{day.previous.lunchClients}</span>
+              <span>{day.current.lunchClients}</span>
+              <span className={day.lunchDiff.delta >= 0 ? "text-emerald-700" : "text-orange-700"}>{formatDelta(day.lunchDiff.delta)}</span>
+              <span>{day.previous.dinnerClients}</span>
+              <span>{day.current.dinnerClients}</span>
+              <span className={day.dinnerDiff.delta >= 0 ? "text-emerald-700" : "text-orange-700"}>{formatDelta(day.dinnerDiff.delta)}</span>
             </div>
           ))}
         </div>

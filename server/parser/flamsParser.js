@@ -42,7 +42,7 @@ function extractFirst(block, pattern) {
 
 function splitTicketBlocks(text) {
   return text
-    .split(/(?=Table:\s*\S+\s+(?:N° Note|Note number):?\s*\d+\s+Number of covers:\s*\d+)/i)
+    .split(/(?=Table:\s*\S+\s+(?:N.? Note|Note number):?\s*\d+\s+Number of covers:\s*\d+)/i)
     .filter((block) => /^Table:/i.test(block.trim()));
 }
 
@@ -66,7 +66,7 @@ function serviceFromDate(date) {
 
 function parseTicket(block, fallbackDate) {
   const openedAt = parseOpenedAt(block, fallbackDate);
-  const noteNumber = block.match(/(?:N° Note|Note number):?\s*(\d+)/i)?.[1] || null;
+  const noteNumber = block.match(/(?:N.? Note|Note number):?\s*(\d+)/i)?.[1] || null;
   const tableName = block.match(/Table:\s*(\S+)/i)?.[1] || null;
   const covers = extractFirst(block, /Number of covers:\s*(-?\d+)/i);
   const totalToPay = extractFirst(block, /TOTAL (?:A PAYER|TO PAY):\s*([-\d\s,.]+)/i);
@@ -127,10 +127,21 @@ function summarizeTickets(tickets) {
 }
 
 function dailyClientsFor(tickets) {
-  return orderedDays.map((day) => ({
-    day,
-    clients: tickets.filter((ticket) => ticket.day === day).reduce((sum, ticket) => sum + ticket.covers, 0),
-  }));
+  return orderedDays.map((day) => {
+    const dayTickets = tickets.filter((ticket) => ticket.day === day);
+    const lunchTickets = dayTickets.filter((ticket) => ticket.service === "lunch");
+    const dinnerTickets = dayTickets.filter((ticket) => ticket.service === "dinner");
+
+    return {
+      day,
+      clients: dayTickets.reduce((sum, ticket) => sum + ticket.covers, 0),
+      lunchClients: lunchTickets.reduce((sum, ticket) => sum + ticket.covers, 0),
+      dinnerClients: dinnerTickets.reduce((sum, ticket) => sum + ticket.covers, 0),
+      tickets: dayTickets.length,
+      lunchTickets: lunchTickets.length,
+      dinnerTickets: dinnerTickets.length,
+    };
+  });
 }
 
 export async function parseFlamsHtml(filePath, year) {
