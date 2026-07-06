@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Flams Arras · Dashboard OPE</title>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <div class="shell">
+    <header class="hero">
+      <div>
+        <div class="eyebrow">Flams Arras · Analyse remises</div>
+        <h1>Dashboard OPE JUILLET ARRAS</h1>
+        <p>Import HTML 2026 et 2025, sauvegarde serveur, KPI et comparaison clients par service.</p>
+      </div>
+      <div class="status">
+        <span class="dot"></span>
+        <span>Données partagées par lien</span>
+      </div>
+    </header>
+
+    <section class="upload-grid">
+      <form class="upload-card" id="form2026">
+        <div>
+          <span class="badge">Année 2026</span>
+          <h2>Rapport HTML 2026</h2>
+          <p>Fichier principal de l'année en cours.</p>
+        </div>
+        <label class="filebox">
+          <input type="file" name="file" accept=".html,text/html" required>
+          <span>Choisir le HTML 2026</span>
+        </label>
+        <button>Importer 2026</button>
+        <a href="/saved/2026" target="_blank">Voir HTML 2026 sauvegardé</a>
+      </form>
+
+      <form class="upload-card muted" id="form2025">
+        <div>
+          <span class="badge">Année 2025</span>
+          <h2>Rapport HTML 2025</h2>
+          <p>Même type de fichier pour comparer les clients.</p>
+        </div>
+        <label class="filebox">
+          <input type="file" name="file" accept=".html,text/html" required>
+          <span>Choisir le HTML 2025</span>
+        </label>
+        <button>Importer 2025</button>
+        <a href="/saved/2025" target="_blank">Voir HTML 2025 sauvegardé</a>
+      </form>
+    </section>
+
+    <div id="message" class="message hidden"></div>
+
+    <section class="section-head">
+      <div>
+        <span class="eyebrow">KPI 2026</span>
+        <h2>Analyse de base</h2>
+      </div>
+      <div class="meta" id="meta2026">Aucune donnée 2026</div>
+    </section>
+
+    <section class="kpi-grid" id="kpis"></section>
+
+    <section class="section-head">
+      <div>
+        <span class="eyebrow">Comparatif</span>
+        <h2>Clients 2026 vs 2025</h2>
+      </div>
+      <div class="meta">Détail total, midi et soir</div>
+    </section>
+
+    <section class="compare-grid">
+      <div class="panel">
+        <h3>Écart clients par service</h3>
+        <canvas id="barChart" height="230"></canvas>
+      </div>
+      <div class="panel">
+        <h3>Tableau comparatif clients</h3>
+        <table>
+          <thead><tr><th>Indicateur</th><th>2026</th><th>2025</th><th>Écart</th><th>%</th></tr></thead>
+          <tbody id="compareRows"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="compare-grid">
+      <div class="panel">
+        <h3>Répartition clients 2026</h3>
+        <canvas id="donut2026" height="240"></canvas>
+      </div>
+      <div class="panel">
+        <h3>Détail services</h3>
+        <table>
+          <thead><tr><th>Année</th><th>Service</th><th>Clients</th><th>Tickets</th><th>CA</th></tr></thead>
+          <tbody id="serviceRows"></tbody>
+        </table>
+      </div>
+    </section>
+  </div>
+  <script src="/app.js"></script>
+</body>
+</html>
