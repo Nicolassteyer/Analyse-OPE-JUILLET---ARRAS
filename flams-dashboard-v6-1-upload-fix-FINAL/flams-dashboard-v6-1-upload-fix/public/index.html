@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Flams Arras — Dashboard OPE</title>
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+  <main class="app">
+    <section class="hero">
+      <div>
+        <div class="badge">Flams Arras · Analyse remises</div>
+        <h1>Dashboard OPE JUILLET ARRAS</h1>
+        <p>Import HTML 2026 et 2025, sauvegarde serveur, KPI, graphiques et comparaison clients midi / soir.</p>
+      </div>
+      <div class="actions">
+        <div class="upload">
+          <label>Importer HTML 2026</label>
+          <input id="file2026" type="file" accept=".html,.htm" />
+          <button id="upload2026" type="button">Analyser 2026</button>
+        </div>
+        <div class="upload">
+          <label>Importer HTML 2025</label>
+          <input id="file2025" type="file" accept=".html,.htm" />
+          <button id="upload2025" type="button">Analyser 2025</button>
+        </div>
+        <div class="status" id="status">Prêt. Choisis un fichier HTML puis clique sur analyser.</div>
+      </div>
+    </section>
+
+    <section class="grid" id="kpis"></section>
+
+    <section class="meta">
+      <div><strong>Période affichée</strong><span id="period">—</span></div>
+      <div><strong>Dernière mise à jour</strong><span id="updated">—</span></div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap">
+        <a id="link2026" class="linkbtn secondary" href="/saved/2026.html" target="_blank">HTML 2026 sauvegardé</a>
+        <a id="link2025" class="linkbtn secondary" href="/saved/2025.html" target="_blank">HTML 2025 sauvegardé</a>
+      </div>
+    </section>
+
+    <section class="panel">
+      <div class="section-title">
+        <div>
+          <h2>Comparatif clients 2026 vs 2025</h2>
+          <span>Total, service du midi et service du soir</span>
+        </div>
+      </div>
+      <div class="compare" id="compareCards"></div>
+      <div style="margin-top:18px" id="compareTable"></div>
+    </section>
+
+    <section class="charts">
+      <div class="panel">
+        <div class="section-title"><div><h2>Clients par service</h2><span>2026 vs 2025</span></div></div>
+        <div class="canvasBox"><canvas id="serviceChart"></canvas></div>
+      </div>
+      <div class="panel">
+        <div class="section-title"><div><h2>CA vs remises</h2><span>Répartition globale</span></div></div>
+        <div class="canvasBox"><canvas id="donutChart"></canvas></div>
+      </div>
+    </section>
+
+    <section class="panel" style="margin-top:20px">
+      <div class="section-title"><div><h2>Tickets détectés</h2><span>Base de l’analyse</span></div></div>
+      <div id="tickets"></div>
+    </section>
+  </main>
+  <script src="/app.js"></script>
+</body>
+</html>
