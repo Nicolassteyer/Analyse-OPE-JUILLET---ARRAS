@@ -1,0 +1,170 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Flams Arras — Comparatif OPE 2026 / 2025</title>
+  <link rel="stylesheet" href="/style.css?v=5" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="logo">F</div>
+        <div>
+          <strong>Flams Arras</strong>
+          <span>Analyse OPE</span>
+        </div>
+      </div>
+
+      <nav class="menu">
+        <a class="active" href="/dashboard">Dashboard</a>
+        <a href="/api/download-html/2026" target="_blank">HTML 2026</a>
+        <a href="/api/download-html/2025" target="_blank">HTML 2025</a>
+      </nav>
+
+      <div class="operation-card">
+        <span>Opération suivie</span>
+        <strong>OPE JUILLET ARRAS</strong>
+      </div>
+    </aside>
+
+    <main class="main">
+      <section class="hero">
+        <div>
+          <div class="eyebrow">Tableau de bord partagé</div>
+          <h1>Comparatif OPE 2026 / 2025</h1>
+          <p>Importe un HTML pour 2026 et un HTML comparable pour 2025. L'application sauvegarde les deux fichiers sur le serveur et compare automatiquement les clients par service midi / soir.</p>
+        </div>
+        <div class="hero-badge">
+          <span>Analyse active</span>
+          <strong>Clients · Remises · CA · Services</strong>
+        </div>
+      </section>
+
+      <section class="upload-grid">
+        <form id="uploadForm2026" class="upload-card" data-year="2026">
+          <div class="upload-head">
+            <span class="year-pill">2026</span>
+            <div>
+              <strong>Rapport HTML année 2026</strong>
+              <small>Fichier principal de l'année en cours</small>
+            </div>
+          </div>
+          <label class="dropzone" for="file2026">
+            <input id="file2026" type="file" accept=".html,.htm,text/html" required />
+            <span id="fileName2026">Choisir le fichier HTML 2026</span>
+          </label>
+          <button type="submit">Analyser 2026</button>
+        </form>
+
+        <form id="uploadForm2025" class="upload-card alt" data-year="2025">
+          <div class="upload-head">
+            <span class="year-pill muted">2025</span>
+            <div>
+              <strong>Rapport HTML année 2025</strong>
+              <small>Même type de fichier pour comparaison N-1</small>
+            </div>
+          </div>
+          <label class="dropzone" for="file2025">
+            <input id="file2025" type="file" accept=".html,.htm,text/html" required />
+            <span id="fileName2025">Choisir le fichier HTML 2025</span>
+          </label>
+          <button type="submit">Analyser 2025</button>
+        </form>
+      </section>
+
+      <div id="status" class="alert loading">Chargement des rapports sauvegardés…</div>
+
+      <section class="section-title">
+        <div>
+          <span>Analyse de base</span>
+          <h2>Données 2026</h2>
+        </div>
+        <small>Le bloc 2026 conserve l'ancien fonctionnement de l'application.</small>
+      </section>
+
+      <section class="metrics">
+        <article class="metric accent-blue"><span>Nombre de remises</span><strong id="discountQty2026">—</strong><em>Qt / Nombre d'articles</em></article>
+        <article class="metric accent-red"><span>Montant remisé</span><strong id="discountAmount2026">—</strong><em>Remise totale</em></article>
+        <article class="metric"><span>CA concerné</span><strong id="caTickets2026">—</strong><em>Total TTC tickets avec remise</em></article>
+        <article class="metric"><span>Clients concernés</span><strong id="clients2026">—</strong><em>Couverts détectés</em></article>
+        <article class="metric"><span>Tickets concernés</span><strong id="ticketsWithDiscount2026">—</strong><em>Tickets contenant l'OPE</em></article>
+        <article class="metric"><span>Panier moyen</span><strong id="avgTicket2026">—</strong><em>CA / ticket concerné</em></article>
+        <article class="metric"><span>CA moyen client</span><strong id="avgClient2026">—</strong><em>CA / client</em></article>
+        <article class="metric"><span>Taux remise estimé</span><strong id="discountRate2026">—</strong><em>Remise / CA avant remise</em></article>
+      </section>
+
+      <section class="info-strip">
+        <div><span>Période 2026</span><strong id="period2026">—</strong></div>
+        <div><span>Mise à jour 2026</span><strong id="importedAt2026">—</strong></div>
+        <div><span>Période 2025</span><strong id="period2025">—</strong></div>
+        <div><span>Mise à jour 2025</span><strong id="importedAt2025">—</strong></div>
+      </section>
+
+      <section class="section-title">
+        <div>
+          <span>Comparatif clients</span>
+          <h2>2026 vs 2025 par service</h2>
+        </div>
+        <small>Service midi détecté avant 17h, service soir à partir de 17h.</small>
+      </section>
+
+      <section class="comparison-grid">
+        <article class="comparison-card">
+          <span>Clients total 2026</span>
+          <strong id="totalClients2026">—</strong>
+          <em id="totalDeltaLabel">—</em>
+        </article>
+        <article class="comparison-card">
+          <span>Clients total 2025</span>
+          <strong id="totalClients2025">—</strong>
+          <em>Année N-1</em>
+        </article>
+        <article class="comparison-card">
+          <span>Écart clients</span>
+          <strong id="totalDelta">—</strong>
+          <em id="totalDeltaPct">—</em>
+        </article>
+      </section>
+
+      <section class="service-table-card">
+        <header>
+          <div>
+            <span>Détail par service</span>
+            <h2>Clients midi / soir</h2>
+          </div>
+        </header>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Service</th>
+                <th>Clients 2026</th>
+                <th>Clients 2025</th>
+                <th>Écart</th>
+                <th>Évolution</th>
+              </tr>
+            </thead>
+            <tbody id="serviceRows"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="charts">
+        <article class="panel">
+          <header><div><span>Comparatif</span><h2>Clients par service</h2></div></header>
+          <div class="chart"><canvas id="serviceChart"></canvas></div>
+        </article>
+        <article class="panel">
+          <header><div><span>2026</span><h2>CA par ticket concerné</h2></div></header>
+          <div class="chart"><canvas id="ticketsChart"></canvas></div>
+        </article>
+      </section>
+    </main>
+  </div>
+
+  <script src="/app.js?v=5"></script>
+</body>
+</html>
