@@ -1,10 +1,13 @@
 import { useState } from "react";
 import { UploadDropzone } from "../components/upload/UploadDropzone.jsx";
+import { useAnalysisStore } from "../hooks/useAnalysisStore.jsx";
 
 export default function Imports() {
+  const { saveImport } = useAnalysisStore();
   const [history, setHistory] = useState([]);
 
   function addImport(item) {
+    saveImport(item);
     setHistory((current) => [{ ...item, importedAt: new Date().toLocaleString("fr-FR") }, ...current]);
   }
 

@@ -1,16 +1,16 @@
 import { Area, AreaChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 
-const data = [
-  { day: "Lun", clients: 22 },
-  { day: "Mar", clients: 26 },
-  { day: "Mer", clients: 24 },
-  { day: "Jeu", clients: 31 },
-  { day: "Ven", clients: 34 },
-  { day: "Sam", clients: 29 },
-  { day: "Dim", clients: 18 },
+const fallbackData = [
+  { day: "Lun", clients: 0 },
+  { day: "Mar", clients: 0 },
+  { day: "Mer", clients: 0 },
+  { day: "Jeu", clients: 0 },
+  { day: "Ven", clients: 0 },
+  { day: "Sam", clients: 0 },
+  { day: "Dim", clients: 0 },
 ];
 
-export function RevenueChart() {
+export function RevenueChart({ data = fallbackData }) {
   return (
     <div className="h-80 rounded-lg border border-slate-200 bg-white p-4">
       <ResponsiveContainer width="100%" height="100%">
