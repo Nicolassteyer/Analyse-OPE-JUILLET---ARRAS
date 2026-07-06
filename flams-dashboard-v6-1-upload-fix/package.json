@@ -1,0 +1,13 @@
+{
+  "name": "flams-dashboard-pro",
+  "version": "6.0.0",
+  "description": "Dashboard OPE FLAMS 2025/2026 avec sauvegarde serveur",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {}
+}
