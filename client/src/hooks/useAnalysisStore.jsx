@@ -56,6 +56,8 @@ export function getKpis(importResult) {
     dinnerClients: 0,
     ticketsCount: 0,
     revenueConcerned: 0,
+    discountAmount: 0,
+    discountsQuantity: 0,
     averageTicket: 0,
     lunchTickets: 0,
     dinnerTickets: 0,

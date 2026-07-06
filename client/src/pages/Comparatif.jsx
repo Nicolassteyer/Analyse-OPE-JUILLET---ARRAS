@@ -16,12 +16,16 @@ export default function Comparatif() {
   const { importsByYear } = useAnalysisStore();
   const kpis2025 = getKpis(importsByYear[2025]);
   const kpis2026 = getKpis(importsByYear[2026]);
+  const scope2025 = importsByYear[2025]?.parsed?.scope || "Non importe";
+  const scope2026 = importsByYear[2026]?.parsed?.scope || "Non importe";
 
   const rows = [
     { label: "Clients total", current: kpis2026.clientsCount, previous: kpis2025.clientsCount },
     { label: "Clients midi", current: kpis2026.lunchClients, previous: kpis2025.lunchClients },
     { label: "Clients soir", current: kpis2026.dinnerClients, previous: kpis2025.dinnerClients },
     { label: "Tickets", current: kpis2026.ticketsCount, previous: kpis2025.ticketsCount },
+    { label: "Qt remises", current: kpis2026.discountsQuantity, previous: kpis2025.discountsQuantity },
+    { label: "Montant remises", current: kpis2026.discountAmount, previous: kpis2025.discountAmount, currency: true },
     { label: "CA indicatif", current: kpis2026.revenueConcerned, previous: kpis2025.revenueConcerned, currency: true },
   ].map((row) => ({ ...row, ...diff(row.current, row.previous) }));
 
@@ -39,8 +43,9 @@ export default function Comparatif() {
         <p className="mt-2 max-w-3xl text-sm font-semibold text-muted">
           Comparaison sur OPE Juillet Arras avec quantites, ecarts chiffres et pourcentages. Importe les deux annees pour obtenir un comparatif complet.
         </p>
+        <p className="mt-2 text-sm font-black text-slate-700">Perimetres compares: 2025 = {scope2025} / 2026 = {scope2026}</p>
       </section>
-      <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-5">
+      <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
         {rows.map((row) => (
           <article key={row.label} className="glass-panel rounded-lg p-5">
             <p className="text-sm font-bold text-muted">{row.label}</p>

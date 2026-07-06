@@ -1,6 +1,7 @@
 import fs from "node:fs/promises";
 
 const dayLabels = ["Dim", "Lun", "Mar", "Mer", "Jeu", "Ven", "Sam"];
+const orderedDays = ["Lun", "Mar", "Mer", "Jeu", "Ven", "Sam", "Dim"];
 
 function toNumber(value) {
   if (!value) {
@@ -25,7 +26,6 @@ function extractDates(text) {
     const [, day, month, year] = match;
     return new Date(Number(year), Number(month) - 1, Number(day));
   });
-
   const validDates = matches.filter((date) => !Number.isNaN(date.getTime())).sort((a, b) => a - b);
   const format = (date) => date?.toLocaleDateString("fr-FR") || null;
 
@@ -36,100 +36,134 @@ function extractDates(text) {
   };
 }
 
-function extractNumbers(text, labels) {
-  return labels.flatMap((label) => {
-    const pattern = new RegExp(`${label}\\s*:?\\s*(-?\\d+[\\d\\s]*(?:[,.]\\d+)?)`, "gi");
-    return [...text.matchAll(pattern)].map((match) => toNumber(match[1]));
-  });
+function extractFirst(block, pattern) {
+  return toNumber(block.match(pattern)?.[1]);
 }
 
 function splitTicketBlocks(text) {
-  const blocks = text.split(/(?=\bTicket\b\s*[:#]?\s*\d*)/i).filter((block) => /ticket|total to pay|number of covers/i.test(block));
-  if (blocks.length > 1) {
-    return blocks;
-  }
-
-  return text.split(/(?=\bTOTAL TO PAY\b)/i).filter((block) => /total to pay|number of covers/i.test(block));
+  return text
+    .split(/(?=Table:\s*\S+\s+(?:N° Note|Note number):?\s*\d+\s+Number of covers:\s*\d+)/i)
+    .filter((block) => /^Table:/i.test(block.trim()));
 }
 
-function getService(hour) {
-  if (hour === null) {
+function parseOpenedAt(block, fallbackDate) {
+  const match = block.match(/(?:Table ouverte par|Table opened by):[\s\S]*?@\s*(\d{1,2})[.\/-](\d{1,2})[.\/-](20\d{2})\s+(\d{1,2}):(\d{2})/i);
+  if (!match) {
+    return fallbackDate || null;
+  }
+
+  const [, day, month, year, hour, minute] = match;
+  return new Date(Number(year), Number(month) - 1, Number(day), Number(hour), Number(minute));
+}
+
+function serviceFromDate(date) {
+  if (!date) {
     return "unknown";
   }
 
-  return hour < 15 ? "lunch" : "dinner";
+  return date.getHours() < 15 ? "lunch" : "dinner";
 }
 
 function parseTicket(block, fallbackDate) {
-  const covers = extractNumbers(block, ["Number of covers", "Couverts", "Clients"])[0] || 0;
-  const totalToPay = extractNumbers(block, ["TOTAL TO PAY", "Total a payer", "Total"])[0] || 0;
-  const discount = extractNumbers(block, ["Total remise", "Remise"])[0] || 0;
-  const timeMatch = block.match(/\b([01]?\d|2[0-3])[:h]([0-5]\d)\b/i);
-  const hour = timeMatch ? Number(timeMatch[1]) : null;
-  const dateMatch = block.match(/\b(\d{1,2})[\/.-](\d{1,2})[\/.-](20\d{2})\b/);
-  const date = dateMatch ? new Date(Number(dateMatch[3]), Number(dateMatch[2]) - 1, Number(dateMatch[1])) : fallbackDate;
+  const openedAt = parseOpenedAt(block, fallbackDate);
+  const noteNumber = block.match(/(?:N° Note|Note number):?\s*(\d+)/i)?.[1] || null;
+  const tableName = block.match(/Table:\s*(\S+)/i)?.[1] || null;
+  const covers = extractFirst(block, /Number of covers:\s*(-?\d+)/i);
+  const totalToPay = extractFirst(block, /TOTAL (?:A PAYER|TO PAY):\s*([-\d\s,.]+)/i);
+  const discount = extractFirst(block, /Total remise:\s*([-\d\s,.]+)/i);
+  const discountQuantity = extractDiscountQuantity(block);
+  const subtotal = extractFirst(block, /SOUS-TOTAL:\s*([-\d\s,.]+)/i);
+  const hasOperationDiscount = /OPE JUILLET ARRAS/i.test(block);
 
   return {
+    ticketNumber: noteNumber,
+    tableName,
     covers,
     totalToPay,
+    subtotal,
     discount,
-    service: getService(hour),
-    day: date && !Number.isNaN(date.getTime()) ? dayLabels[date.getDay()] : "Non date",
+    discountQuantity,
+    hasOperationDiscount,
+    service: serviceFromDate(openedAt),
+    day: openedAt && !Number.isNaN(openedAt.getTime()) ? dayLabels[openedAt.getDay()] : "Non date",
+    openedAt: openedAt?.toISOString() || null,
   };
+}
+
+function extractDiscountQuantity(block) {
+  const section = block.match(/(?:Raison de remise|Reason of discount)[\s\S]*?(?=TOTAL (?:A PAYER|TO PAY)|Payment modes|$)/i)?.[0] || "";
+  const lines = section.split("\n");
+
+  return lines.reduce((sum, line) => {
+    const match = line.match(/^\s*(-?\d+(?:[,.]\d+)?)\s+.+?\s+(-?\d+(?:[,.]\d{2}))\s{2,}/);
+    return sum + (match ? toNumber(match[1]) : 0);
+  }, 0);
+}
+
+function summarizeTickets(tickets) {
+  const lunchTickets = tickets.filter((ticket) => ticket.service === "lunch");
+  const dinnerTickets = tickets.filter((ticket) => ticket.service === "dinner");
+  const revenueConcerned = tickets.reduce((sum, ticket) => sum + ticket.totalToPay, 0);
+  const discountAmount = tickets.reduce((sum, ticket) => sum + ticket.discount, 0);
+  const discountsQuantity = tickets.reduce((sum, ticket) => sum + ticket.discountQuantity, 0);
+  const clientsCount = tickets.reduce((sum, ticket) => sum + ticket.covers, 0);
+  const ticketsCount = tickets.length;
+
+  return {
+    discountsCount: tickets.filter((ticket) => ticket.discount > 0).length,
+    discountsQuantity,
+    discountAmount,
+    revenueConcerned,
+    ticketsCount,
+    clientsCount,
+    lunchClients: lunchTickets.reduce((sum, ticket) => sum + ticket.covers, 0),
+    dinnerClients: dinnerTickets.reduce((sum, ticket) => sum + ticket.covers, 0),
+    lunchTickets: lunchTickets.length,
+    dinnerTickets: dinnerTickets.length,
+    averageTicket: ticketsCount ? revenueConcerned / ticketsCount : 0,
+    averageRevenuePerClient: clientsCount ? revenueConcerned / clientsCount : 0,
+    discountRate: revenueConcerned ? (discountAmount / (revenueConcerned + discountAmount)) * 100 : 0,
+  };
+}
+
+function dailyClientsFor(tickets) {
+  return orderedDays.map((day) => ({
+    day,
+    clients: tickets.filter((ticket) => ticket.day === day).reduce((sum, ticket) => sum + ticket.covers, 0),
+  }));
 }
 
 export async function parseFlamsHtml(filePath, year) {
   const html = await fs.readFile(filePath, "utf8");
   const text = stripHtml(html);
   const period = extractDates(text);
-  const blocks = splitTicketBlocks(text);
-  const tickets = blocks.map((block) => parseTicket(block, period.dates[0])).filter((ticket) => ticket.covers || ticket.totalToPay || ticket.discount);
-
-  const fallbackClients = extractNumbers(text, ["Number of covers", "Couverts", "Clients"]).reduce((sum, value) => sum + value, 0);
-  const fallbackRevenue = extractNumbers(text, ["TOTAL TO PAY", "CA", "Total"]).reduce((sum, value) => sum + value, 0);
-  const clientsCount = tickets.reduce((sum, ticket) => sum + ticket.covers, 0) || fallbackClients;
-  const revenueConcerned = tickets.reduce((sum, ticket) => sum + ticket.totalToPay, 0) || fallbackRevenue;
-  const ticketsCount = tickets.length || [...text.matchAll(/\bTicket\b/gi)].length;
-  const lunchTickets = tickets.filter((ticket) => ticket.service === "lunch");
-  const dinnerTickets = tickets.filter((ticket) => ticket.service === "dinner");
-  const discountAmount = tickets.reduce((sum, ticket) => sum + ticket.discount, 0);
-
-  const dailyClients = ["Lun", "Mar", "Mer", "Jeu", "Ven", "Sam", "Dim"].map((day) => ({
-    day,
-    clients: tickets.filter((ticket) => ticket.day === day).reduce((sum, ticket) => sum + ticket.covers, 0),
-  }));
+  const tickets = splitTicketBlocks(text)
+    .map((block) => parseTicket(block, period.dates[0]))
+    .filter((ticket) => ticket.ticketNumber || ticket.covers || ticket.totalToPay || ticket.discount);
+  const operationTickets = tickets.filter((ticket) => ticket.hasOperationDiscount);
+  const discountedTickets = tickets.filter((ticket) => ticket.discount > 0);
+  const analysisTickets = operationTickets.length ? operationTickets : discountedTickets.length ? discountedTickets : tickets;
+  const scope = operationTickets.length ? "OPE JUILLET ARRAS" : discountedTickets.length ? "Tickets remises" : "Tous tickets";
 
   return {
     year,
-    parserVersion: "sprint-2-basic-html",
+    parserVersion: "sprint-2-flams-table-blocks",
+    scope,
     period: {
       startDate: period.startDate,
       endDate: period.endDate,
     },
     detected: {
-      hasTable: /table/i.test(text),
-      hasTicket: /ticket/i.test(text),
-      hasCovers: /number of covers|couverts|clients/i.test(text),
-      hasDiscount: /total remise|remise/i.test(text),
-      hasTotalToPay: /total to pay|total a payer/i.test(text),
-      hasOperation: /ope juillet arras/i.test(text),
+      hasTable: /Table:/i.test(text),
+      hasTicket: tickets.length > 0,
+      hasCovers: /Number of covers/i.test(text),
+      hasDiscount: /total remise|discount/i.test(text),
+      hasTotalToPay: /TOTAL A PAYER|TOTAL TO PAY/i.test(text),
+      hasOperation: /OPE JUILLET ARRAS/i.test(text),
     },
-    dailyClients,
-    tickets,
-    kpis: {
-      discountsCount: tickets.filter((ticket) => ticket.discount > 0).length,
-      discountsQuantity: 0,
-      discountAmount,
-      revenueConcerned,
-      ticketsCount,
-      clientsCount,
-      lunchClients: lunchTickets.reduce((sum, ticket) => sum + ticket.covers, 0),
-      dinnerClients: dinnerTickets.reduce((sum, ticket) => sum + ticket.covers, 0),
-      lunchTickets: lunchTickets.length,
-      dinnerTickets: dinnerTickets.length,
-      averageTicket: ticketsCount ? revenueConcerned / ticketsCount : 0,
-      averageRevenuePerClient: clientsCount ? revenueConcerned / clientsCount : 0,
-      discountRate: revenueConcerned ? (discountAmount / revenueConcerned) * 100 : 0,
-    },
+    dailyClients: dailyClientsFor(analysisTickets),
+    allTicketsKpis: summarizeTickets(tickets),
+    tickets: analysisTickets,
+    kpis: summarizeTickets(analysisTickets),
   };
 }
