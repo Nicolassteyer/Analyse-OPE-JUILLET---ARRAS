@@ -1,0 +1,14 @@
+{
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "@fastify/multipart": "latest",
+    "fastify": "latest",
+    "node-html-parser": "latest"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "type": "module"
+}
