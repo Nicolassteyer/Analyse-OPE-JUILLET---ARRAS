@@ -8,6 +8,24 @@ export async function fetchHealth() {
   return response.json();
 }
 
+export async function fetchImportStore() {
+  const response = await fetch(`${API_BASE}/api/imports`);
+  if (!response.ok) {
+    throw new Error("Historique indisponible");
+  }
+
+  return response.json();
+}
+
+export async function resetImportStore() {
+  const response = await fetch(`${API_BASE}/api/imports`, { method: "DELETE" });
+  if (!response.ok) {
+    throw new Error("Reset impossible");
+  }
+
+  return response.json();
+}
+
 export function uploadHtmlExport({ year, file, onProgress }) {
   return new Promise((resolve, reject) => {
     const formData = new FormData();

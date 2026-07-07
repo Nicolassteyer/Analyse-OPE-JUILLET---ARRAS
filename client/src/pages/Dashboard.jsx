@@ -1,6 +1,6 @@
 import { RevenueChart } from "../components/charts/RevenueChart.jsx";
 import { KpiCard } from "../components/dashboard/KpiCard.jsx";
-import { getActiveImport, getKpis, useAnalysisStore } from "../hooks/useAnalysisStore.jsx";
+import { getActiveImport, getGlobalKpis, getKpis, useAnalysisStore } from "../hooks/useAnalysisStore.jsx";
 import { formatCurrency } from "../utils/formatters.js";
 
 function periodLabel(importResult) {
@@ -20,15 +20,16 @@ export default function Dashboard() {
   const { importsByYear } = useAnalysisStore();
   const activeImport = getActiveImport(importsByYear);
   const kpis = getKpis(activeImport);
+  const globalKpis = getGlobalKpis(activeImport);
   const daily = activeImport?.parsed?.dailyClients || [];
   const importedYear = activeImport?.year || "aucune annee importee";
   const scope = activeImport?.parsed?.scope || "Aucun import";
 
   const cards = [
-    { label: "Clients total", value: kpis.clientsCount, trend: "Midi + Soir", tone: "good" },
-    { label: "Clients midi", value: kpis.lunchClients, trend: `${kpis.clientsCount ? Math.round((kpis.lunchClients / kpis.clientsCount) * 100) : 0}% du total`, tone: "good" },
-    { label: "Clients soir", value: kpis.dinnerClients, trend: `${kpis.clientsCount ? Math.round((kpis.dinnerClients / kpis.clientsCount) * 100) : 0}% du total` },
-    { label: "Tickets analyses", value: kpis.ticketsCount, trend: scope },
+    { label: "Clients totaux", value: globalKpis.clientsCount, trend: "Tous tickets", tone: "good" },
+    { label: "Clients OPE / remises", value: kpis.clientsCount, trend: scope, tone: "good" },
+    { label: "Midi analyse", value: kpis.lunchClients, trend: `${kpis.clientsCount ? Math.round((kpis.lunchClients / kpis.clientsCount) * 100) : 0}% du perimetre` },
+    { label: "Soir analyse", value: kpis.dinnerClients, trend: `${kpis.clientsCount ? Math.round((kpis.dinnerClients / kpis.clientsCount) * 100) : 0}% du perimetre` },
     { label: "Qt remises", value: kpis.discountsQuantity || 0, trend: formatCurrency(kpis.discountAmount || 0) },
   ];
 
@@ -38,7 +39,7 @@ export default function Dashboard() {
         <p className="text-sm font-black uppercase text-brand">Periode analysee: OPE Juillet Arras - {importedYear}</p>
         <h1 className="mt-2 text-3xl font-black tracking-normal text-slate-950">Focus clients midi, soir et total</h1>
         <p className="mt-2 max-w-3xl text-sm font-semibold text-muted">
-          Plage analysee: {periodLabel(activeImport)}. Perimetre: {scope}. Les indicateurs se mettent a jour apres import d'un export HTML 2025 ou 2026.
+          Plage analysee: {periodLabel(activeImport)}. Clients totaux = tous tickets. Clients OPE/remises = perimetre {scope}.
         </p>
       </section>
       <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-5">
@@ -69,7 +70,7 @@ export default function Dashboard() {
             <div className="rounded-lg border border-slate-200 bg-slate-950 p-4 text-white">
               <strong className="text-lg">Total</strong>
               <p className="mt-2 text-sm font-bold text-slate-200">
-                Clients: {kpis.clientsCount} - Tickets: {kpis.ticketsCount} - Qt remises: {kpis.discountsQuantity || 0} - Remises: {formatCurrency(kpis.discountAmount || 0)}
+                Clients perimetre: {kpis.clientsCount} - Clients totaux: {globalKpis.clientsCount} - Tickets perimetre: {kpis.ticketsCount} - Qt remises: {kpis.discountsQuantity || 0}
               </p>
             </div>
           </div>

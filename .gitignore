@@ -7,5 +7,6 @@ dist/
 server/uploads/**/*.html
 server/uploads/**/*.htm
 server/uploads/**/*.tmp
+server/data/*.json
 server/prisma/dev.db
 *.log

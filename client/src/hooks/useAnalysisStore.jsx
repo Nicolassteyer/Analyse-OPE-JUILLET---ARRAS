@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect, useMemo, useState } from "react";
+import { fetchImportStore, resetImportStore } from "../services/api.js";
 
-const STORAGE_KEY = "flams-analysis-imports";
 const AnalysisContext = createContext(null);
 
 const emptyByYear = {
@@ -8,30 +8,71 @@ const emptyByYear = {
   2026: null,
 };
 
+const emptyStore = {
+  importsByYear: emptyByYear,
+  history: [],
+};
+
 export function AnalysisProvider({ children }) {
-  const [importsByYear, setImportsByYear] = useState(() => {
+  const [store, setStore] = useState(emptyStore);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  async function refreshImports() {
+    setLoading(true);
+    setError(null);
     try {
-      return { ...emptyByYear, ...JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}") };
-    } catch {
-      return emptyByYear;
+      const nextStore = await fetchImportStore();
+      setStore({
+        importsByYear: { ...emptyByYear, ...(nextStore.importsByYear || {}) },
+        history: nextStore.history || [],
+      });
+    } catch (refreshError) {
+      setError(refreshError.message);
+    } finally {
+      setLoading(false);
     }
-  });
-
-  useEffect(() => {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(importsByYear));
-  }, [importsByYear]);
-
-  function saveImport(importResult) {
-    setImportsByYear((current) => ({
-      ...current,
-      [importResult.year]: {
-        ...importResult,
-        importedAt: new Date().toISOString(),
-      },
-    }));
   }
 
-  const value = useMemo(() => ({ importsByYear, saveImport }), [importsByYear]);
+  async function resetImports() {
+    const nextStore = await resetImportStore();
+    setStore({
+      importsByYear: { ...emptyByYear, ...(nextStore.importsByYear || {}) },
+      history: nextStore.history || [],
+    });
+  }
+
+  function saveImport(importResult) {
+    const nextStore = importResult.store || {
+      importsByYear: {
+        ...store.importsByYear,
+        [importResult.year]: importResult,
+      },
+      history: [importResult, ...store.history],
+    };
+
+    setStore({
+      importsByYear: { ...emptyByYear, ...(nextStore.importsByYear || {}) },
+      history: nextStore.history || [],
+    });
+  }
+
+  useEffect(() => {
+    refreshImports();
+  }, []);
+
+  const value = useMemo(
+    () => ({
+      importsByYear: store.importsByYear,
+      history: store.history,
+      loading,
+      error,
+      refreshImports,
+      resetImports,
+      saveImport,
+    }),
+    [store, loading, error],
+  );
 
   return <AnalysisContext.Provider value={value}>{children}</AnalysisContext.Provider>;
 }
